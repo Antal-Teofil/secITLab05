@@ -4,6 +4,7 @@ from Crypto.Util import Padding
 from Crypto.Cipher import AES
 from Crypto.Protocol import KDF
 
+# 1.  3b256fcf74da7a88ceecbea5f79d43
 
 # ------ CONFIG ------
 TEST = True
@@ -72,10 +73,10 @@ if operation == 'enc':
     key = KDF.PBKDF2(passphrase, salt, count=100000, dkLen=32)
 
     # create a AES-CBC cipher object using the key and the IV
-    # TODO: aes_cbc = AES.new(__, __, __)
+    aes_cbc = AES.new(key, AES.MODE_CBC, iv)
 
     # encrypt the padded plaintext to produce a ciphertext
-    # TODO: ciphertext = __.encrypt(__)
+    ciphertext = aes_cbc.encrypt(padded_plaintext)
 
     # write out the random salt used for key derivation, the IV,
     # and the ciphertext to the output file
@@ -100,16 +101,15 @@ else:
     
     # derive the 32-byte key from the passphrase 
     # using PBKDF2 with the salt and iteration count 100000
-    # TODO: key = ...
+    key = KDF.PBKDF2(passphrase, salt, count=100000, dkLen=32)
 
     # create an AES-CBC cipher object for decrypting the ciphertext 
-    # TODO: aes_cbc = ... 
+    aes_cbc = AES.new(key, AES.MODE_CBC, iv)
 	
     # decrypt the ciphertext and remove padding
     try:
-        # TODO: padded_plaintext = __.decrypt(__)
-        # TODO: plaintext = __.unpad(__, __, style=__)
-        pass # TODO: remove this line!
+        padded_plaintext = aes_cbc.decrypt(ciphertext)
+        plaintext = Padding.unpad(padded_plaintext, AES.block_size, style='pkcs7')
     except ValueError:
         print('Error: Decryption failed.')
         sys.exit(1)
