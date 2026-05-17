@@ -8,8 +8,8 @@ from Crypto.Hash import SHA256
 from Crypto.Util import Padding
 from Crypto import Random
 
-# 1. a0a0a9392d9b8bebb272f9691f4c8b6c
-
+# 3. a0a0a9392d9b8bebb272f9691f4c8b6c
+# 4. 6f66207468652073656374696f6e732e
 # ------ CONFIG ------
 TEST = True
 # --------------------
