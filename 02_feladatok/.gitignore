@@ -1,0 +1,22 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Editor settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated files
+output*
+out*
+result*
+decrypted*
+encrypted*
+*.out
