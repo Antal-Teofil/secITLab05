@@ -8,6 +8,8 @@ from Crypto.Hash import SHA256
 from Crypto.Util import Padding
 from Crypto import Random
 
+# 1. a0a0a9392d9b8bebb272f9691f4c8b6c
+
 # ------ CONFIG ------
 TEST = True
 # --------------------
@@ -149,24 +151,24 @@ elif operation == 'enc':
         symkey = b'testtesttesttesttesttesttesttest'  # a 32-byte test key
         iv = b'iviviviviviviviv'  # a 16-byte test IV        
     else:
-        # TODO: symkey = ...   # a 32-byte random key
-        # TODO: iv = ...   # a 16-byte random IV
+        symkey = Random.get_random_bytes(32)   # a 32-byte random key
+        iv = Random.get_random_bytes(16)   # a 16-byte random IV
 
     # create an AES-CBC cipher object with the generated key and IV
-    # TODO: AEScipher = ...
+    AEScipher = AES.new(symkey, AES.MODE_CBC, iv)
 
     # read the plaintext from the input file
     with open(inputfile, 'rb') as f: 
         plaintext = f.read()
 
     # apply PKCS7 padding on the plaintext
-    # TODO: padded_plaintext = ...
+    padded_plaintext = Padding.pad(plaintext, AES.block_size, style='pkcs7')
 	
     # encrypt the padded plaintext with the AES-CBC cipher
-    # TODO: ciphertext = ...
+    ciphertext = AEScipher.encrypt(padded_plaintext)
 
     #encrypt the AES key with the RSA cipher
-    # TODO: encsymkey = ... 
+    encsymkey = RSAcipher.encrypt(symkey)
 
     # compute signature if needed
     if sign:
@@ -229,10 +231,10 @@ elif operation == 'dec':
     # verify signature if needed
     if sign:
         pubkey = load_publickey(pubkeyfile)
-        # TODO: verifier = ...
-        # TODO: hashfn = ...
-        # TODO: hashfn.update(__)
-        # TODO: if verifier.verify(__, __) == True:
+        verifier = PKCS1_PSS.new(pubkey)
+        hashfn = SHA256.new()
+        hashfn.update(encsymkey + iv + ciphertext)
+        if verifier.verify(hashfn, signature) == True:
             print('Signature verification is successful.')
         else:
             print('Signature verification is failed.')
@@ -243,22 +245,22 @@ elif operation == 'dec':
     # load the private key from the private key file and 
     # create the RSA cipher object
     keypair = load_keypair(privkeyfile)
-    # TODO: RSAcipher = ...
+    RSAcipher = PKCS1_OAEP.new(keypair)
 
     #decrypt the AES key
     try:
-        # TODO: symkey = ... 
+        symkey = RSAcipher.decrypt(encsymkey)
     except ValueError:
         print('Error: Decryption of AES key is failed.')
         sys.exit(1)
 
     #create the AES-CBC cipher object
-    # TODO: AEScipher = ...   
+    AEScipher = AES.new(symkey, AES.MODE_CBC, iv) 
 	
     # decrypt the ciphertext and remove padding
     try:
-        # TODO: padded_plaintext = ...
-        # TODO: plaintext = ...
+        padded_plaintext = AEScipher.decrypt(ciphertext)
+        plaintext = Padding.unpad(padded_plaintext, AES.block_size, style='pkcs7')
     except ValueError:
         print('Error: Decryption of the ciphertext is failed.')
         sys.exit(1)
