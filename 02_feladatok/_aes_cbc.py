@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 from Crypto.Protocol import KDF
 
 # 1.  3b256fcf74da7a88ceecbea5f79d43
+# 2. 537475786e65740a3d3d3d3d3d3d3d0a
 
 # ------ CONFIG ------
 TEST = True
